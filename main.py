@@ -1,17 +1,18 @@
-from bottle import Bottle, run, static_file
+from bottle import Bottle, run, static_file, view
 
 
 app = Bottle()
 
 
 @app.get('/')
+@view('index')
 def show_index():
-    return 'Main page; form for adding a link; list of all links'
+    return {}
 
 
 @app.post('/')
-def add_link():
-    return 'Add a link and redirect to main page'
+def perform_action():
+    return 'Add or delete a link and redirect to main page'
 
 
 @app.get('/<link_id:re:[^-/]+>')
@@ -20,8 +21,9 @@ def follow_link(link_id):
 
 
 @app.get('/<link_id:re:[^-/]+->')
+@view('stat')
 def show_link_stat(link_id):
-    return 'Show stat for link "{}"'.format(link_id)
+    return {'link_id': link_id}
 
 
 @app.get('/static/<filepath:path>')
