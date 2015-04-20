@@ -1,2 +1,5 @@
 % rebase('base.tpl')
-[Stats for link "{{link_id}}"]
+<b>Stats for your link:</b><br />
+Link ID: {{!link.id}}<br />
+Link URL: {{link.url}}<br />
+Times visited: {{link.visits}}<br />
