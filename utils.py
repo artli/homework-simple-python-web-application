@@ -3,5 +3,4 @@ import string
 
 
 def generate_id():
-    return ''.join(random.choice(string.ascii_letters + string.digits)
-                   for _ in range(10))
+    return ''.join(random.sample(string.ascii_letters + string.digits, 10))

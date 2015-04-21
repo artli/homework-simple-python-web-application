@@ -18,7 +18,7 @@ def show_index():
 def add_link():
     link_url = request.forms.get('link_url')
     autodelete = request.forms.get('autodelete') == 'on'
-    password = request.forms.get('password') or ''
+    password = request.forms.get('password', '')
     if link_url:
         while True:
             id = generate_id()
@@ -30,8 +30,8 @@ def add_link():
 
 @app.post('/action/delete')
 def delete_link():
-    link_id = (request.forms.get('link_id') or '').strip()
-    password = request.forms.get('password') or ''
+    link_id = request.forms.get('link_id', '').strip()
+    password = request.forms.get('password', '')
     link = manager.get_link_by_id(link_id)
     if link:
         if link.check_password(password):
