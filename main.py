@@ -1,8 +1,7 @@
 from bottle import Bottle, run, static_file, view, request, redirect, HTTPError
 from manager import Manager
 from model import Link
-import random
-import string
+from utils import generate_id
 
 
 app = Bottle()
@@ -15,25 +14,27 @@ def show_index():
     return {'links': manager.get_all_links()}
 
 
-def generate_id():
-    while True:
-        id = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(10))
-        if manager.get_link_by_id(id) is None:
-            return id
-
-
-@app.post('/')
-def perform_action():
-    action = request.forms.get('action')
-    link_id = request.forms.get('link_id')
+@app.post('/action/add')
+def add_link():
     link_url = request.forms.get('link_url')
-    autodelete = request.forms.get('autodelete')
-    if action == 'add':
-        if link_url:
-            manager.save(Link(generate_id(), link_url, autodelete == 'on'))
-    elif action == 'delete':
-        link = manager.get_link_by_id(link_id)
-        if link:
+    autodelete = request.forms.get('autodelete') == 'on'
+    password = request.forms.get('password') or ''
+    if link_url:
+        while True:
+            id = generate_id()
+            if manager.get_link_by_id(id) is None:
+                break
+        manager.save(Link(id, link_url, autodelete, password))
+    redirect('/')
+
+
+@app.post('/action/delete')
+def delete_link():
+    link_id = (request.forms.get('link_id') or '').strip()
+    password = request.forms.get('password') or ''
+    link = manager.get_link_by_id(link_id)
+    if link:
+        if link.check_password(password):
             manager.delete(link)
     redirect('/')
 
